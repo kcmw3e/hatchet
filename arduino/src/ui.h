@@ -31,6 +31,7 @@
 #define UI_RUP_RAISE digitalPinToInterrupt(UI_PIN_RAISE)
 #define UI_RUP_SPLIT digitalPinToInterrupt(UI_PIN_SPLIT)
 
+#define UI_PRESSED_STATE HIGH
 
 // // Custom characters
 // byte dotOff[] = { 0b00000, 0b01110, 0b10001, 0b10001,
@@ -41,12 +42,14 @@
 class UI {
   private:
     LiquidCrystal_PCF8574 _lcd;
+    bool _button_triggered;
   public:
     Button raise;
     Button split;
 
     UI();
     bool setup();
+    void set_button_triggered();
     void update();
 };
 

@@ -7,11 +7,11 @@
 
 #include "ui.h"
 
-void raise_rup();
-void split_rup();
-
 UI::UI() {
   LiquidCrystal_PCF8574 _lcd(UI_LCD_ADDR);
+  
+  Button raise(UI_PIN_RAISE, UI_PRESSED_STATE);
+  Button split(UI_PIN_SPLIT, UI_PRESSED_STATE);
 }
 
 bool UI::setup() {
@@ -26,14 +26,23 @@ bool UI::setup() {
   // _lcd.createChar(1, dotOff);
   // _lcd.createChar(2, dotOn);
 
-  pinMode(UI_PIN_RAISE, INPUT);
-  pinMode(UI_PIN_SPLIT, INPUT);
+  raise.setup();
+  split.setup();
 
   return true;
 }
 
+void UI::set_button_triggered() {
+  _button_triggered = true;
+}
+
 void UI::update() {
-  DEBUG_INFO("raise: %s", raise.state ? "PRESSED" : "UNPRESSED");
+  if (_button_triggered) {
+    raise.toggle();
+    split.toggle();
+
+    _button_triggered = false;
+  }
 }
 
 /*
