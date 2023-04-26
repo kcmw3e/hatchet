@@ -9,72 +9,38 @@
 #include "src/motor.h"
 #include "src/cal.h"
 #include "src/ui.h"
+#include "src/limit.h"
 
-Cal cal;
-Motor mot;
-UI ui;
+Cal cal;    // scheduler
+Motor mot;  // motor
+UI ui;      // ui buttons and lcd
+Limit lim;  // limit switches
 
 #define BAUD 115200
+
+void try_setup(bool setup_result, const char* success,  const char* failure);
 
 void setup() {
   Serial.begin(BAUD);
   DEBUG_INFO("Setting things up...");
 
-  if (!mot.setup()) {
-    DEBUG_INFO("failed motor setup");
-    while (true);
-  };
-  DEBUG_INFO("success motor setup");
-
-  if (!cal.setup()) {
-    DEBUG_INFO("failed scheduler setup");
-    while (true);
-  }
-  DEBUG_INFO("success scheduler setup");
-
-  if (!tasks_setup()) {
-    DEBUG_INFO("failed setting up tasks");
-    while (true);
-  }   
-  DEBUG_INFO("success setting up tasks");
-
-  if (!ui.setup()) {
-    DEBUG_INFO("failed setting up ui");
-    while (true);
-  }
-  DEBUG_INFO("success setting up ui");
-
-  if (!interrupt_setup()) {
-    DEBUG_INFO("failed setting up interrupts");
-    while (true);
-  }
-  DEBUG_INFO("success setting up interrupts");
-
-  // Attach interrupts as needed
-  // set up LED pins
-  // set up Motor driver & pins
-  // set up LCD & pins
-  // set up IR LED/receiver & pins
+  try_setup(mot.setup(),       "Successfully set up motor.",          "Failed setting up motor.");
+  try_setup(cal.setup(),       "Successfully set up scheduler.",      "Failed setting up scheduler.");
+  try_setup(tasks_setup(),     "Successfully set up tasks.",          "Failed setting up tasks.");
+  try_setup(ui.setup(),        "Successfully set up UI.",             "Failed setting up UI.");
+  try_setup(interrupt_setup(), "Successfully set up interrupts.",     "Failed setting up interrupts.");
+  try_setup(lim.setup(),       "Successfully set up limit switches.", "Failed setting up limit switches.");
 }
 
 void loop() {
   cal.tick();
-  // Check on state, update LCD
-  // Check on IR receiver, update state
-  // Update motor driver control based on state of UI
-  // Update LEDs based on state (or whatever controlls LEDs)
 }
 
-// Events:
-//  Main switch (Arudino powers on)
-//  E-Stop (motor controller & motor lose power), not sure how to detect
-//  Buttons from UI
-//  Switches from UI
-//  Limit switches from cage
-//  IR receiver signal change
-
-// Events that can be interrupts:
-//  Main switch (if not used to switch Arduino power)
-//  E-stop (if find a way to monitor)
-//  Buttons & switches from UI
-//  Limit switches
+void try_setup(bool setup_result, const char* success,  const char* failure) {
+  if (!setup_result) {
+    DEBUG_INFO(failure);
+    while (true);
+  } else {
+    DEBUG_INFO(success);
+  }
+}
