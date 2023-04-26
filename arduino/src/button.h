@@ -21,11 +21,15 @@ typedef int button_state_t;
 
 class Button {
   private:
+    uint8_t _pin;
+    int _pressed_state; // HIGH or LOW
     uint32_t _t;
   public:
     button_state_t state;
 
     Button();
+    Button(uint8_t pin, int pressed_state);
+    bool setup();
     void toggle();
 };
 
