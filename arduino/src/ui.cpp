@@ -47,6 +47,14 @@ void UI::lights(bool on) {
   digitalWrite(UI_PIN_LIGHTS, val);
 }
 
+void UI::set_lcd_msg(const char* msg1, const char* msg2) {
+  _lcd.home();
+  _lcd.clear();
+  _lcd.print(msg1);
+  _lcd.setCursor(0, 1); // move to second line
+  _lcd.print(msg2);
+}
+
 /*
 void loop() {
   if (show == 0) {

@@ -42,6 +42,7 @@ class UI {
     bool setup();
     void update();
     void lights(bool on);
+    void set_lcd_msg(const char* msg1, const char* msg2 = "");
 };
 
 #endif // EMSD_UI_H
