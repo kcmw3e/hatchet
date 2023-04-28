@@ -11,8 +11,10 @@
 #define EMSD_CAL_H
 
 #include <Arduino.h>
+#include <stdint.h>
 
-#define MAX_NUM_TASKS 64
+#define MAX_NUM_TASKS 32
+#define MAX_NUM_SCHED_TASKS 64
 
 using namespace std;
 
@@ -22,23 +24,24 @@ class Task {
   private:
     task_fn* _fn;
     uint32_t _dt; // milliseconds
+    uint32_t _count; // number of times to execute
     uint32_t _t;
   public:
-    Task(task_fn* fn, size_t dt);
     Task();
+    Task(task_fn* fn, size_t dt, size_t count = SIZE_MAX);
     void operator()(uint32_t);
+    bool done();
 };
 
 class Cal {
   private:
     uint32_t _t;
     Task _tasks[MAX_NUM_TASKS];
-    size_t _tasks_i = 0;
   public:
     Cal();
     bool setup();
     void tick();
-    void add(task_fn* task, uint32_t dt);
+    void add(task_fn* task, uint32_t dt, size_t count = SIZE_MAX);
 };
 
 #endif // EMSD_CAL_H

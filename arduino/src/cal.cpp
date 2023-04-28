@@ -8,9 +8,10 @@
 #include "cal.h"
 
 
-Task::Task(task_fn* fn, size_t dt) {
+Task::Task(task_fn* fn, size_t dt, size_t count) {
   _fn = fn;
   _dt = dt;
+  _count = count;
   _t = millis();
 }
 
@@ -21,10 +22,16 @@ Task::Task() {
 }
 
 void Task::operator()(uint32_t t) {
+  if (_count == 0) return;
   if (t - _t > _dt) {
     _t = t;
     _fn();
+    if (_count != SIZE_MAX) _count--;
   }
+}
+
+bool Task::done() {
+  return _count == 0;
 }
 
 Cal::Cal() {
@@ -37,14 +44,16 @@ bool Cal::setup() {
 
 void Cal::tick() {
   _t = millis();
-  for (size_t i = 0; i < _tasks_i; i++) {
+  for (size_t i = 0; i < MAX_NUM_TASKS; i++) {
     Task& task = _tasks[i];
     task(_t);
   }
 }
 
-void Cal::add(task_fn* fn, uint32_t dt) {
-  Task task(fn, dt);
-  _tasks[_tasks_i] = task;
-  _tasks_i++;
+void Cal::add(task_fn* fn, uint32_t dt, size_t count) {
+  for (size_t i = 0; i < MAX_NUM_TASKS; i++) {
+    if (!_tasks[i].done()) continue;
+    _tasks[i] = Task(fn, dt, count);
+    break;
+  }
 }
