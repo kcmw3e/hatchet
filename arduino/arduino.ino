@@ -30,6 +30,10 @@ void setup() {
   try_setup(ui.setup(),        "Successfully set up UI.",             "Failed setting up UI.");
   try_setup(interrupt_setup(), "Successfully set up interrupts.",     "Failed setting up interrupts.");
   try_setup(lim.setup(),       "Successfully set up limit switches.", "Failed setting up limit switches.");
+  try_setup(callbacks_setup(), "Successfully set up callbacks.",      "Failed setting up callbacks.");
+
+  DEBUG_INFO("Successfully set up all tasks.");
+  DEBUG_INFO("\n");
 }
 
 void loop() {
@@ -38,9 +42,9 @@ void loop() {
 
 void try_setup(bool setup_result, const char* success,  const char* failure) {
   if (!setup_result) {
-    DEBUG_INFO(failure);
+    DEBUG_INFO("> %s", failure);
     while (true);
   } else {
-    DEBUG_INFO(success);
+    DEBUG_INFO("> %s", success);
   }
 }

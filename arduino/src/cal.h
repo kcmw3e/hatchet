@@ -25,7 +25,7 @@ class Task {
     uint32_t _t;
   public:
     Task(task_fn* fn, size_t dt);
-    Task::Task();
+    Task();
     void operator()(uint32_t);
 };
 

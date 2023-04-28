@@ -11,26 +11,29 @@
 #define EMSD_BUTTON_H
 
 #include <Arduino.h>
+#include <Arduino_DebugUtils.h>
 
 #define BUTTON_DEBOUNCE_TIME 50 // ms
 
-#define BUTTON_STATE_PRESSED true
-#define BUTTON_STATE_UNPRESSED false
+#define BUTTON_STATE_PRESSED HIGH
+#define BUTTON_STATE_UNPRESSED LOW
 
 typedef int button_state_t;
+typedef void button_callback_fn();
 
 class Button {
   private:
     uint8_t _pin;
-    int _pressed_state; // HIGH or LOW
     uint32_t _t;
+    button_state_t _state;
+    button_callback_fn* _fn;
   public:
-    button_state_t state;
-
     Button();
-    Button(uint8_t pin, int pressed_state);
+    Button(uint8_t pin);
     bool setup();
-    void toggle();
+    void set_callback(button_callback_fn* fn);
+    void update();
+    button_state_t state();
 };
 
 #endif // EMSD_BUTTON_H

@@ -8,9 +8,9 @@
 #include "limit.h"
 
 Limit::Limit(){
-  Button top(LIMIT_PIN_TOP, LIMIT_PRESSED_STATE);
-  Button bot(LIMIT_PIN_BOT, LIMIT_PRESSED_STATE);
-  Button doot(LIMIT_PIN_DOOR, LIMIT_PRESSED_STATE);
+  top = Button(LIMIT_PIN_TOP);
+  bot = Button(LIMIT_PIN_BOT);
+  door = Button(LIMIT_PIN_DOOR);
 }
 
 bool Limit::setup() {
@@ -21,16 +21,8 @@ bool Limit::setup() {
   return true;
 }
 
-void Limit::set_triggered() {
-  _triggered = true;
-}
-
 void Limit::update() {
-  if (_triggered) {
-    top.toggle();
-    bot.toggle();
-    door.toggle();
-
-    _triggered = false;
-  }
+  top.update();
+  bot.update();
+  door.update();
 }

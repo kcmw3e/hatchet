@@ -5,10 +5,9 @@
 
 #include "motor.h"
 
-Motor::Motor():
-  _mot(PWM_DIR, MOTOR_PIN_SPD, MOTOR_PIN_DIR)
+Motor::Motor(): _mot(PWM_DIR, MOTOR_PIN_SPD, MOTOR_PIN_DIR)
 {
-  
+  _mot.setSpeed(0);
 }
 
 bool Motor::setup() {
@@ -22,4 +21,8 @@ void Motor::write() {
 
 void Motor::set_spd(int spd) {
   _spd = spd;
+}
+
+void Motor::stop() {
+  _mot.setSpeed(0);
 }

@@ -9,23 +9,31 @@ Button::Button() {
   return;
 }
 
-Button::Button(uint8_t pin, int pressed_state) {
+Button::Button(uint8_t pin) {
   _pin = pin;
-  _pressed_state = pressed_state;
   _t = millis();
-  state = BUTTON_STATE_UNPRESSED;
+  pinMode(_pin, INPUT);
+  _state = digitalRead(_pin);
 }
 
 bool Button::setup() {
-  pinMode(_pin, INPUT);
   return true;
 }
 
-void Button::toggle() {
+void Button::set_callback(button_callback_fn *fn) {
+  _fn = fn;
+}
+
+void Button::update() {
   uint32_t t = millis();
-  if (t - _t > BUTTON_DEBOUNCE_TIME) {
-    if (digitalRead(_pin) == _pressed_state) state = BUTTON_STATE_PRESSED;
-    else state = BUTTON_STATE_UNPRESSED;
+  button_state_t new_state = digitalRead(_pin);
+  if (new_state != _state && t - _t > BUTTON_DEBOUNCE_TIME) {
+    _state = new_state;
     _t = t;
+    if (_fn != NULL) _fn();
   }
+}
+
+button_state_t Button::state() {
+  return _state;
 }

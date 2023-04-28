@@ -14,11 +14,11 @@
 
 #include <CytronMotorDriver.h>
 
-#define MOTOR_PIN_SPD 3 // Motor controller input 1
-#define MOTOR_PIN_DIR 4 // Motor controller input 2
+#define MOTOR_PIN_SPD 5 // Motor controller input 1
+#define MOTOR_PIN_DIR 6 // Motor controller input 2
 
-#define MOTOR_FWD HIGH
-#define MOTOR_REV LOW
+#define MOTOR_RAISE_SPEED 100
+#define MOTOR_SPLIT_SPEED 100
 
 class Motor {
   private:
@@ -29,6 +29,7 @@ class Motor {
     bool setup();
     void write();
     void set_spd(int spd);
+    void stop();
 };
 
 #endif // EMSD_MOTOR_H

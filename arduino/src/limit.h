@@ -15,9 +15,9 @@
 #include "rup.h"
 #include "button.h"
 
-#define LIMIT_PIN_TOP RUP3
-#define LIMIT_PIN_BOT RUP4
-#define LIMIT_PIN_DOOR RUP5
+#define LIMIT_PIN_TOP RUP1
+#define LIMIT_PIN_BOT RUP2
+#define LIMIT_PIN_DOOR RUP3
 
 #define LIMIT_RUPMODE_TOP CHANGE
 #define LIMIT_RUPMODE_BOT CHANGE
@@ -30,8 +30,6 @@
 #define LIMIT_PRESSED_STATE HIGH
 
 class Limit {
-  private:
-    bool _triggered;
   public:
     Button top;
     Button bot;
@@ -39,7 +37,6 @@ class Limit {
 
     Limit();
     bool setup();
-    void set_triggered();
     void update();
 };
 

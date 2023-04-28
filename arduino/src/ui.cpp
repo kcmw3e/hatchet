@@ -8,20 +8,23 @@
 #include "ui.h"
 
 UI::UI() {
-  LiquidCrystal_PCF8574 _lcd(UI_LCD_ADDR);
+  _lcd = LiquidCrystal_PCF8574(UI_LCD_ADDR);
   
-  Button raise(UI_PIN_RAISE, UI_PRESSED_STATE);
-  Button split(UI_PIN_SPLIT, UI_PRESSED_STATE);
+  raise = Button(UI_PIN_RAISE);
+  split = Button(UI_PIN_SPLIT);
 }
 
 bool UI::setup() {
   // verify I2C comm connection
-  // Wire.begin();
-  // Wire.beginTransmission(0x27);
-  // uint8_t result = Wire.endTransmission();
-  // if (result != 0) return false;
+  Wire.begin();
+  Wire.beginTransmission(0x27);
+  uint8_t result = Wire.endTransmission();
+  if (result != 0) return false;
   
-  // _lcd.begin(UI_LCD_COLS, UI_LCD_ROWS);
+  _lcd.begin(UI_LCD_COLS, UI_LCD_ROWS);
+  _lcd.setBacklight(255);
+  _lcd.home();
+  _lcd.clear();
 
   // _lcd.createChar(1, dotOff);
   // _lcd.createChar(2, dotOn);
@@ -29,20 +32,19 @@ bool UI::setup() {
   raise.setup();
   split.setup();
 
+  pinMode(UI_PIN_LIGHTS, OUTPUT);
+
   return true;
 }
 
-void UI::set_button_triggered() {
-  _button_triggered = true;
+void UI::update() {
+  raise.update();
+  split.update();
 }
 
-void UI::update() {
-  if (_button_triggered) {
-    raise.toggle();
-    split.toggle();
-
-    _button_triggered = false;
-  }
+void UI::lights(bool on) {
+  uint8_t val = on ? LOW : HIGH;
+  digitalWrite(UI_PIN_LIGHTS, val);
 }
 
 /*

@@ -16,8 +16,8 @@ enum interrupt_pin {
   RUP2 = 3,
   RUP3 = 18,
   RUP4 = 19,
-  RUP5 = 20,
-  RUP6 = 21,
+  RUP5 = 20, // used for I2C
+  RUP6 = 21, // used for I2C
 };
 
 #endif // EMSD_RUP_H

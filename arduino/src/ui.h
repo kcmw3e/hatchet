@@ -15,23 +15,15 @@
 #include <Wire.h>
 #include <LiquidCrystal_PCF8574.h>
 
-#include "rup.h"
 #include "button.h"
 
 #define UI_LCD_ADDR 0x27
 #define UI_LCD_ROWS 2
 #define UI_LCD_COLS 16
 
-#define UI_PIN_RAISE RUP1
-#define UI_PIN_SPLIT RUP2
-
-#define UI_RUPMODE_RAISE CHANGE
-#define UI_RUPMODE_SPLIT CHANGE
-
-#define UI_RUP_RAISE digitalPinToInterrupt(UI_PIN_RAISE)
-#define UI_RUP_SPLIT digitalPinToInterrupt(UI_PIN_SPLIT)
-
-#define UI_PRESSED_STATE HIGH
+#define UI_PIN_RAISE 8
+#define UI_PIN_SPLIT 9
+#define UI_PIN_LIGHTS 53
 
 // // Custom characters
 // byte dotOff[] = { 0b00000, 0b01110, 0b10001, 0b10001,
@@ -42,15 +34,14 @@
 class UI {
   private:
     LiquidCrystal_PCF8574 _lcd;
-    bool _button_triggered;
   public:
     Button raise;
     Button split;
 
     UI();
     bool setup();
-    void set_button_triggered();
     void update();
+    void lights(bool on);
 };
 
 #endif // EMSD_UI_H
