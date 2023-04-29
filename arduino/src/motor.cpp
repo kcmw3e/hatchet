@@ -20,9 +20,11 @@ void Motor::write() {
 }
 
 void Motor::set_spd(int spd) {
+  DEBUG_INFO("Setting speed to %i", spd);
   _spd = spd;
 }
 
 void Motor::stop() {
+  DEBUG_INFO("Stopping motor.");
   _mot.setSpeed(0);
 }

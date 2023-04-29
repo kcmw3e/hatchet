@@ -11,6 +11,7 @@
 #define EMSD_MOTOR_H
 
 #include <Arduino.h>
+#include <Arduino_DebugUtils.h>
 
 #include <CytronMotorDriver.h>
 
