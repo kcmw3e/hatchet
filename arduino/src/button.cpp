@@ -37,3 +37,11 @@ void Button::update() {
 button_state_t Button::state() {
   return _state;
 }
+
+bool Button::is_pressed() {
+  return _state == BUTTON_STATE_PRESSED;
+}
+
+bool Button::is_unpressed() {
+  return _state == BUTTON_STATE_UNPRESSED;
+}

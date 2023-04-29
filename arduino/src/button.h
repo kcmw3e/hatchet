@@ -34,6 +34,8 @@ class Button {
     void set_callback(button_callback_fn* fn);
     void update();
     button_state_t state();
+    bool is_pressed();
+    bool is_unpressed();
 };
 
 #endif // EMSD_BUTTON_H
