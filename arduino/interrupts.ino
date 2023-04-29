@@ -10,9 +10,9 @@
 // Arduino Mega interrupt pins: 2, 3, 18, 19, 20, 21
 
 bool interrupt_setup() {
-  attachInterrupt(LIMIT_PIN_TOP, rup_mot_limit_triggered, LIMIT_RUPMODE_TOP);
-  attachInterrupt(LIMIT_PIN_BOT, rup_mot_limit_triggered, LIMIT_RUPMODE_BOT);
-  attachInterrupt(LIMIT_PIN_DOOR, rup_door_limit_triggered, LIMIT_RUPMODE_DOOR);
+  attachInterrupt(LIMIT_RUP_TOP, rup_mot_limit_triggered, LIMIT_RUPMODE_TOP);
+  attachInterrupt(LIMIT_RUP_BOT, rup_mot_limit_triggered, LIMIT_RUPMODE_BOT);
+  attachInterrupt(LIMIT_RUP_DOOR, rup_door_limit_triggered, LIMIT_RUPMODE_DOOR);
 
   return true;
 }
