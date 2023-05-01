@@ -18,11 +18,12 @@ bool interrupt_setup() {
 }
 
 void rup_mot_limit_triggered() {
-  if (digitalRead(LIMIT_PIN_TOP) == BUTTON_STATE_PRESSED || digitalRead(LIMIT_PIN_BOT) == BUTTON_STATE_PRESSED)
-    mot.set_spd(0);
+  // if (digitalRead(LIMIT_PIN_TOP) == LIMIT_PRESSED_VAL || digitalRead(LIMIT_PIN_BOT) == LIMIT_PRESSED_VAL)
+  //   mot.stop();
+  return;
 }
 
 void rup_door_limit_triggered() {
-  if (digitalRead(LIMIT_PIN_DOOR) == BUTTON_STATE_UNPRESSED)
-    mot.set_spd(0);
+  if (digitalRead(LIMIT_PIN_DOOR) != LIMIT_PRESSED_VAL) // when door open (i.e. not pressed), stop motor
+    mot.stop();
 }

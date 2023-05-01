@@ -25,6 +25,8 @@
 #define UI_PIN_SPLIT 9
 #define UI_PIN_LIGHTS 53
 
+#define UI_PRESSED_VAL HIGH
+
 // // Custom characters
 // byte dotOff[] = { 0b00000, 0b01110, 0b10001, 0b10001,
 //                   0b10001, 0b01110, 0b00000, 0b00000 };

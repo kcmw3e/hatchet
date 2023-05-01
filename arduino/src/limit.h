@@ -27,7 +27,7 @@
 #define LIMIT_RUP_BOT digitalPinToInterrupt(LIMIT_PIN_BOT)
 #define LIMIT_RUP_DOOR digitalPinToInterrupt(LIMIT_PIN_DOOR)
 
-#define LIMIT_PRESSED_STATE HIGH
+#define LIMIT_PRESSED_VAL LOW
 
 class Limit {
   public:

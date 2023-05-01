@@ -8,9 +8,9 @@
 #include "limit.h"
 
 Limit::Limit(){
-  top = Button(LIMIT_PIN_TOP);
-  bot = Button(LIMIT_PIN_BOT);
-  door = Button(LIMIT_PIN_DOOR);
+  top = Button(LIMIT_PIN_TOP, LIMIT_PRESSED_VAL);
+  bot = Button(LIMIT_PIN_BOT, LIMIT_PRESSED_VAL);
+  door = Button(LIMIT_PIN_DOOR, LIMIT_PRESSED_VAL);
 }
 
 bool Limit::setup() {

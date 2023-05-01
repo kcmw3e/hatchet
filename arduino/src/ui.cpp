@@ -10,8 +10,8 @@
 UI::UI() {
   _lcd = LiquidCrystal_PCF8574(UI_LCD_ADDR);
   
-  raise = Button(UI_PIN_RAISE);
-  split = Button(UI_PIN_SPLIT);
+  raise = Button(UI_PIN_RAISE, UI_PRESSED_VAL);
+  split = Button(UI_PIN_SPLIT, UI_PRESSED_VAL);
 }
 
 bool UI::setup() {

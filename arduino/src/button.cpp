@@ -9,11 +9,12 @@ Button::Button() {
   return;
 }
 
-Button::Button(uint8_t pin) {
+Button::Button(uint8_t pin, int pressed_val) {
   _pin = pin;
   _t = millis();
   pinMode(_pin, INPUT);
-  _state = digitalRead(_pin);
+  _pin_val = digitalRead(_pin);
+  _pressed_val = pressed_val;
 }
 
 bool Button::setup() {
@@ -26,22 +27,18 @@ void Button::set_callback(button_callback_fn *fn) {
 
 void Button::update() {
   uint32_t t = millis();
-  button_state_t new_state = digitalRead(_pin);
-  if (new_state != _state && t - _t > BUTTON_DEBOUNCE_TIME) {
-    _state = new_state;
+  int val = digitalRead(_pin);
+  if (val != _pin_val && t - _t > BUTTON_DEBOUNCE_TIME) {
+    _pin_val = val;
     _t = t;
     if (_fn != NULL) _fn();
   }
 }
 
-button_state_t Button::state() {
-  return _state;
-}
-
 bool Button::is_pressed() {
-  return _state == BUTTON_STATE_PRESSED;
+  return _pin_val == _pressed_val;
 }
 
 bool Button::is_unpressed() {
-  return _state == BUTTON_STATE_UNPRESSED;
+  return _pin_val != _pressed_val;;
 }
