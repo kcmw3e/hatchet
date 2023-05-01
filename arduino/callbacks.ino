@@ -18,43 +18,90 @@ bool callbacks_setup() {
 }
 
 void ui_raise_callback() {
-  if (ui.raise.state() == BUTTON_STATE_PRESSED) {
-    mot.set_spd(MOTOR_RAISE_SPEED);
-    ui.set_lcd_msg("Raising...");
+  if (ui.raise.is_pressed()) {
+    if (lim.top.is_pressed()) {
+      ui.set_lcd_msg("ERR: Already", "raised.");
+      DEBUG_INFO("Raise attempted while crusher is at the top.");
+    } else if (lim.door.is_unpressed()) {
+      ui.set_lcd_msg("ERR: Cannot run", "while door open.");
+      DEBUG_INFO("Raise attempted while door is open.");
+    } else {
+      mot.set_spd(MOTOR_RAISE_SPEED);
+      ui.set_lcd_msg("Raising...");
+      // cal.add(ui_lcd_raise_progress, 500, 50);
+      DEBUG_INFO("Raising crusher.");
+    }
   }
-  DEBUG_INFO("Raise is %s.", ui.raise.state() == BUTTON_STATE_PRESSED ? "pressed" : "unpressed");
 }
 
 void ui_split_callback() {
-  if (ui.split.state() == BUTTON_STATE_PRESSED) {
-    mot.set_spd(MOTOR_SPLIT_SPEED);
-    ui.set_lcd_msg("Splitting,", "watch out!");
+  if (ui.split.is_pressed()) {
+    if (lim.bot.is_pressed()) {
+      ui.set_lcd_msg("ERR: Already", "split.");
+      DEBUG_INFO("Split attempted while crusher is at the bottom.");
+    } else if (lim.door.is_unpressed()) {
+      ui.set_lcd_msg("ERR: Cannot run", "while door open.");
+      DEBUG_INFO("Split attempted while door is open.");
+    } else {
+      mot.set_spd(MOTOR_SPLIT_SPEED);
+      ui.set_lcd_msg("Splitting,", "watch out!");
+      DEBUG_INFO("Sending crusher down.");
+    }
   }
-  DEBUG_INFO("Split is %s.", ui.split.state() == BUTTON_STATE_PRESSED ? "pressed" : "unpressed");
 }
 
 void limit_top_callback() {
-  if (lim.top.state() == BUTTON_STATE_PRESSED) {
+  if (lim.top.is_pressed()) {
     mot.stop();
     ui.set_lcd_msg("Done raising.");
+    DEBUG_INFO("Top limit switched triggered, making sure motor is stopped.");
   }
-  DEBUG_INFO("Top limit switch %s.", lim.top.state() == BUTTON_STATE_PRESSED ? "triggered" : "released");
 }
 
 void limit_bot_callback() {
-  if (lim.bot.state() == BUTTON_STATE_PRESSED) {
+  if (lim.bot.is_pressed()) {
     mot.stop();
     ui.set_lcd_msg("Done splitting.", "Check wood!");
+    DEBUG_INFO("Bottom limit switch triggerd, making sure motor is stopped.");
   }
-  DEBUG_INFO("Bottom limit switch %s.", lim.bot.state() == BUTTON_STATE_PRESSED ? "triggered" : "released");
 }
 
 void limit_door_callback() {
-  bool door_open = lim.door.state() == BUTTON_STATE_PRESSED;
+  bool door_open = lim.door.is_unpressed();
   ui.lights(door_open);
 
   if (door_open) {
+    mot.stop(); // just in case door opened while running
     ui.set_lcd_msg("Door is open,", "cannot run.");
   }
-  DEBUG_INFO("Door limit switch %s.", lim.door.state() == BUTTON_STATE_PRESSED ? "triggered" : "released");
+}
+
+
+void ui_lcd_raise_progress() {
+  static size_t n = 0;
+
+  const char* dots;
+  switch (n) {
+    case 0:
+      dots = "";
+      break;
+    case 1:
+      dots = ".";
+      break;
+    case 2:
+      dots = "..";
+      break;
+    case 3:
+      dots = "...";
+      break;
+    default:
+      dots = "";
+      n = 0;
+      break;
+  }
+  n++;
+
+  char msg[15];
+  sprintf(msg, "%s%s", "Raising", dots);  
+  ui.set_lcd_msg(msg);
 }
