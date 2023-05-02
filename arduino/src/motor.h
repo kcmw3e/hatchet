@@ -34,12 +34,12 @@
 # define MOTOR_ENABLE LOW
 # define MOTOR_DISABLE HIGH
 
-# define MOTOR_RAISE_SPEED -140
-# define MOTOR_SPLIT_SPEED 140
+# define MOTOR_RAISE_SPEED 150
+# define MOTOR_SPLIT_SPEED -200
 
-# define MOTOR_SPD_MAX 140
+# define MOTOR_SPD_MAX 200
 
-# define MOTOR_DISABLE_DELAY 10
+# define MOTOR_DISABLE_DELAY 50 // microseconds
 #endif // MOTOR_CONTROL_CYTRON
 
 class Motor {

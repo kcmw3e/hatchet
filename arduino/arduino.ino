@@ -10,11 +10,13 @@
 #include "src/cal.h"
 #include "src/ui.h"
 #include "src/limit.h"
+#include "src/lock.h"
 
 Cal cal;    // scheduler
 Motor mot;  // motor
 UI ui;      // ui buttons and lcd
 Limit lim;  // limit switches
+Lock lock;  // servo locking mechanism
 
 #define BAUD 115200
 
@@ -31,6 +33,7 @@ void setup() {
   try_setup(interrupt_setup(), "Successfully set up interrupts.",     "Failed setting up interrupts.");
   try_setup(lim.setup(),       "Successfully set up limit switches.", "Failed setting up limit switches.");
   try_setup(callbacks_setup(), "Successfully set up callbacks.",      "Failed setting up callbacks.");
+  // try_setup(lock.setup(),      "Successfully set up the lock." ,      "Failed setting up the lock.");
 
   DEBUG_INFO("Successfully set up all tasks.");
   DEBUG_INFO("\n");

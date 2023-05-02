@@ -19,6 +19,7 @@ bool callbacks_setup() {
 
 void ui_raise_callback() {
   if (ui.raise.is_pressed()) {
+    // lock.lock();
     if (lim.top.is_pressed()) {
       ui.set_lcd_msg("ERR: Already", "raised.");
       DEBUG_INFO("Raise attempted while crusher is at the top.");
@@ -43,6 +44,7 @@ void ui_split_callback() {
       ui.set_lcd_msg("ERR: Cannot run", "while door open.");
       DEBUG_INFO("Split attempted while door is open.");
     } else {
+      // lock.unlock();
       mot.set_spd(MOTOR_SPLIT_SPEED);
       ui.set_lcd_msg("Splitting,", "watch out!");
       DEBUG_INFO("Sending crusher down.");
@@ -52,6 +54,7 @@ void ui_split_callback() {
 
 void limit_top_callback() {
   if (lim.top.is_pressed()) {
+    // lock.lock();
     mot.stop();
     ui.set_lcd_msg("Done raising.");
     DEBUG_INFO("Top limit switched triggered, making sure motor is stopped.");

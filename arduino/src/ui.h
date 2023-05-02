@@ -22,7 +22,7 @@
 #define UI_LCD_COLS 16
 
 #define UI_PIN_RAISE 8
-#define UI_PIN_SPLIT 9
+#define UI_PIN_SPLIT 10
 #define UI_PIN_LIGHTS 53
 
 #define UI_PRESSED_VAL HIGH
