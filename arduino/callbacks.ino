@@ -7,6 +7,14 @@
 // callbacks for buttons
 //
 
+#define MOTOR_MODE_RAMP 1
+
+#define RAMP_TIME 50 // milliseconds
+#define RAMP_CALL_COUNT 20
+#define RAMP_INTERVAL RAMP_TIME/RAMP_CALL_COUNT
+
+static int RAMP_DIFF = 0;
+
 bool callbacks_setup() {
   ui.raise.set_callback(ui_raise_callback);
   ui.split.set_callback(ui_split_callback);
@@ -27,9 +35,15 @@ void ui_raise_callback() {
       ui.set_lcd_msg("ERR: Cannot run", "while door open.");
       DEBUG_INFO("Raise attempted while door is open.");
     } else {
-      mot.set_spd(MOTOR_RAISE_SPEED);
+#     if MOTOR_MODE_RAMP
+        mot.set_targ(MOTOR_RAISE_SPEED);
+        mot.set_incr_fn(motor_ramp);
+        RAMP_DIFF = MOTOR_RAISE_SPEED - mot.get_spd();
+        cal.add(motor_incr_spd, RAMP_INTERVAL, RAMP_CALL_COUNT);
+#     else
+        mot.set_spd(MOTOR_RAISE_SPEED);
+#     endif // MOTOR_MODE_RAMP
       ui.set_lcd_msg("Raising...");
-      // cal.add(ui_lcd_raise_progress, 500, 50);
       DEBUG_INFO("Raising crusher.");
     }
   }
@@ -45,7 +59,14 @@ void ui_split_callback() {
       DEBUG_INFO("Split attempted while door is open.");
     } else {
       // lock.unlock();
-      mot.set_spd(MOTOR_SPLIT_SPEED);
+#     if MOTOR_MODE_RAMP
+        mot.set_targ(MOTOR_SPLIT_SPEED);
+        mot.set_incr_fn(motor_ramp);
+        RAMP_DIFF = MOTOR_SPLIT_SPEED - mot.get_spd();
+        cal.add(motor_incr_spd, RAMP_INTERVAL, RAMP_CALL_COUNT);
+#     else
+        mot.set_spd(MOTOR_SPLIT_SPEED);
+#     endif // MOTOR_MODE_RAMP
       ui.set_lcd_msg("Splitting,", "watch out!");
       DEBUG_INFO("Sending crusher down.");
     }
@@ -79,6 +100,23 @@ void limit_door_callback() {
   }
 }
 
+void motor_incr_spd() {
+  mot.incr_spd();
+}
+
+int motor_ramp(int cur, int targ) {
+  if (targ < 0 && cur > targ)      return motor_ramp_down(cur);
+  else if (targ > 0 && cur < targ) return motor_ramp_up(cur);
+  return targ;
+}
+
+int motor_ramp_up(int cur) {
+  return cur + RAMP_DIFF/RAMP_CALL_COUNT;
+}
+
+int motor_ramp_down(int cur) {
+  return cur - RAMP_DIFF/RAMP_CALL_COUNT;
+}
 
 void ui_lcd_raise_progress() {
   static size_t n = 0;

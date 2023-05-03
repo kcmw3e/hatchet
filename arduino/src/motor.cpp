@@ -5,30 +5,22 @@
 
 #include "motor.h"
 
-#if MOTOR_CONTROL_CYTRON
+
+# if MOTOR_CONTROL_CYTRON
   Motor::Motor(): _mot(PWM_DIR, MOTOR_PIN_SPD, MOTOR_PIN_DIR)
   {
     _mot.setSpeed(0);
   }
+# else
+  Motor::Motor()
+  {
+    pinMode(MOTOR_PIN_SPD, OUTPUT);
+    pinMode(MOTOR_PIN_DIR, OUTPUT);
+    pinMode(MOTOR_PIN_ENA, OUTPUT);
 
-  bool Motor::setup() {
-    _mot.setSpeed(0);
-    return true;
+    stop();
   }
 
-  void Motor::write() {
-    _mot.setSpeed(_spd);
-  }
-
-  void Motor::set_spd(int spd) {
-    _spd = spd;
-  }
-
-  void Motor::stop() {
-    _mot.setSpeed(0);
-    _spd = 0;
-  }
-#else
   void Motor::_enable() {
     delayMicroseconds(MOTOR_DISABLE_DELAY); // give relay time to switch
     digitalWrite(MOTOR_PIN_ENA, MOTOR_ENABLE);
@@ -61,27 +53,23 @@
     if (spd > MOTOR_SPD_MAX) spd = MOTOR_SPD_MAX;
     analogWrite(MOTOR_PIN_SPD, spd);
   }
+# endif // MOTOR_CONTROL_CYTRON
 
-  Motor::Motor()
-  {
-    pinMode(MOTOR_PIN_SPD, OUTPUT);
-    pinMode(MOTOR_PIN_DIR, OUTPUT);
-    pinMode(MOTOR_PIN_ENA, OUTPUT);
+bool Motor::setup() {
+  stop();
 
-    stop();
-  }
+  return true;
+}
 
-  bool Motor::setup() {
-    _pend_spd = 0;
-    _write_spd = 0;
+void Motor::set_incr_fn(motor_incr_fn* fn) {
+  _incr_fn = fn;
+}
 
-    stop();
-
-    return true;
-  }
-
-  void Motor::write() {
-    if (_pend_spd != _write_spd) {
+void Motor::write() {
+  if (_pend_spd != _write_spd) {
+#   if MOTOR_CONTROL_CYTRON
+      _mot.setSpeed(_pend_spd);
+#   else
       if (_pend_spd < 0) {
         // signs differ, so disable to change direction (to avoid possibility of shorting)
         if (_write_spd > 0) _disable();
@@ -98,18 +86,39 @@
         _disable();
         _spd(0);
       }
-    }
+#   endif // MOTOR_CONTROL_CYTRON
     _write_spd = _pend_spd;
   }
+}
 
-  void Motor::set_spd(int spd) {
-    _pend_spd = spd;
-  }
+void Motor::set_spd(int spd) {
+  _pend_spd = spd;
+}
 
-  void Motor::stop() {
+int Motor::get_spd() {
+  return _write_spd;
+}
+
+void Motor::set_targ(int spd) {
+  _targ_spd = spd;
+}
+
+void Motor::incr_spd() {
+  if (_incr_fn == NULL) return;
+
+  _pend_spd = _incr_fn(_write_spd, _targ_spd);
+  if (_pend_spd == _targ_spd) _incr_fn = NULL; 
+}
+
+void Motor::stop() {
+#   if MOTOR_CONTROL_CYTRON
+    _mot.setSpeed(0);
+#   else
     _disable();
     _spd(0);
+#   endif // MOTOR_CONTROL_CYTRON
+    _incr_fn = NULL;
     _pend_spd = 0;
     _write_spd = 0;
-  }
-#endif // MOTOR_CONTROL_CYTRON
+    _targ_spd = 0;
+}

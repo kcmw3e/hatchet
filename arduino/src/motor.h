@@ -13,7 +13,7 @@
 #include <Arduino.h>
 #include <Arduino_DebugUtils.h>
 
-#define MOTOR_CONTROL_CYTRON 0
+#define MOTOR_CONTROL_CYTRON 1
 
 #if MOTOR_CONTROL_CYTRON
 # include <CytronMotorDriver.h>
@@ -42,15 +42,17 @@
 # define MOTOR_DISABLE_DELAY 50 // microseconds
 #endif // MOTOR_CONTROL_CYTRON
 
+typedef int motor_incr_fn(int cur, int targ);
+
 class Motor {
   private:
+    int _targ_spd;  // target speed for ramping
+    int _pend_spd;  // pending speed for next write
+    int _write_spd; // speed currently being written
+    motor_incr_fn* _incr_fn;
 #   if MOTOR_CONTROL_CYTRON
-      int _spd;
       CytronMD _mot;
 #   else
-    int _pend_spd;
-    int _write_spd;
-
     void _enable();
     void _disable();
     void _dir(uint8_t dir);
@@ -59,8 +61,12 @@ class Motor {
   public:
     Motor();
     bool setup();
+    void set_incr_fn(motor_incr_fn* fn);
     void write();
     void set_spd(int spd);
+    int get_spd();
+    void set_targ(int spd);
+    void incr_spd();
     void stop();
 };
 
