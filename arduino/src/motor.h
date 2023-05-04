@@ -21,7 +21,7 @@
 # define MOTOR_PIN_SPD 5 // Motor controller input 1
 # define MOTOR_PIN_DIR 6 // Motor controller input 2
 
-# define MOTOR_RAISE_SPEED 100
+# define MOTOR_RAISE_SPEED -50
 # define MOTOR_SPLIT_SPEED 100
 #else
 # define MOTOR_PIN_SPD 4 // pin to control 980Hz PWM motor speed control

@@ -9,8 +9,8 @@
 
 #define MOTOR_MODE_RAMP 1
 
-#define RAMP_TIME 50 // milliseconds
-#define RAMP_CALL_COUNT 20
+#define RAMP_TIME 100 // milliseconds
+#define RAMP_CALL_COUNT 5
 #define RAMP_INTERVAL RAMP_TIME/RAMP_CALL_COUNT
 
 static int RAMP_DIFF = 0;
@@ -105,17 +105,8 @@ void motor_incr_spd() {
 }
 
 int motor_ramp(int cur, int targ) {
-  if (targ < 0 && cur > targ)      return motor_ramp_down(cur);
-  else if (targ > 0 && cur < targ) return motor_ramp_up(cur);
-  return targ;
-}
-
-int motor_ramp_up(int cur) {
+  if ((targ < 0 && cur < targ) || (targ > 0 && cur > targ))      return targ;
   return cur + RAMP_DIFF/RAMP_CALL_COUNT;
-}
-
-int motor_ramp_down(int cur) {
-  return cur - RAMP_DIFF/RAMP_CALL_COUNT;
 }
 
 void ui_lcd_raise_progress() {
