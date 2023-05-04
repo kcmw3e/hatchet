@@ -29,8 +29,10 @@ class Task {
   public:
     Task();
     Task(task_fn* fn, size_t dt, size_t count = SIZE_MAX);
+    void reset_time();
     void operator()(uint32_t);
     bool done();
+    uint32_t get_time();
 };
 
 class Cal {

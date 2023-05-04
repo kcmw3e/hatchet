@@ -12,6 +12,7 @@
 #define RAMP_TIME 100 // milliseconds
 #define RAMP_CALL_COUNT 5
 #define RAMP_INTERVAL RAMP_TIME/RAMP_CALL_COUNT
+#define SPLIT_ATTEMPT_TIME 3000 // milliseconds
 
 static int RAMP_DIFF = 0;
 
@@ -35,16 +36,7 @@ void ui_raise_callback() {
       ui.set_lcd_msg("ERR: Cannot run", "while door open.");
       DEBUG_INFO("Raise attempted while door is open.");
     } else {
-#     if MOTOR_MODE_RAMP
-        mot.set_targ(MOTOR_RAISE_SPEED);
-        mot.set_incr_fn(motor_ramp);
-        RAMP_DIFF = MOTOR_RAISE_SPEED - mot.get_spd();
-        cal.add(motor_incr_spd, RAMP_INTERVAL, RAMP_CALL_COUNT);
-#     else
-        mot.set_spd(MOTOR_RAISE_SPEED);
-#     endif // MOTOR_MODE_RAMP
-      ui.set_lcd_msg("Raising...");
-      DEBUG_INFO("Raising crusher.");
+      motor_raise();
     }
   }
 }
@@ -58,17 +50,8 @@ void ui_split_callback() {
       ui.set_lcd_msg("ERR: Cannot run", "while door open.");
       DEBUG_INFO("Split attempted while door is open.");
     } else {
-      // lock.unlock();
-#     if MOTOR_MODE_RAMP
-        mot.set_targ(MOTOR_SPLIT_SPEED);
-        mot.set_incr_fn(motor_ramp);
-        RAMP_DIFF = MOTOR_SPLIT_SPEED - mot.get_spd();
-        cal.add(motor_incr_spd, RAMP_INTERVAL, RAMP_CALL_COUNT);
-#     else
-        mot.set_spd(MOTOR_SPLIT_SPEED);
-#     endif // MOTOR_MODE_RAMP
-      ui.set_lcd_msg("Splitting,", "watch out!");
-      DEBUG_INFO("Sending crusher down.");
+      cal.add(motor_raise, SPLIT_ATTEMPT_TIME, 1);
+      motor_split();
     }
   }
 }
@@ -97,7 +80,38 @@ void limit_door_callback() {
   if (door_open) {
     mot.stop(); // just in case door opened while running
     ui.set_lcd_msg("Door is open,", "cannot run.");
+  } else {
+    ui.set_lcd_msg("Door is closed,", "ready to run.");
   }
+}
+
+void motor_raise() {
+  if (lim.door.is_unpressed() || lim.top.is_pressed()) return;
+#     if MOTOR_MODE_RAMP
+      mot.set_targ(MOTOR_RAISE_SPEED);
+      mot.set_incr_fn(motor_ramp);
+      RAMP_DIFF = MOTOR_RAISE_SPEED - mot.get_spd();
+      cal.add(motor_incr_spd, RAMP_INTERVAL, RAMP_CALL_COUNT);
+#     else
+      mot.set_spd(MOTOR_RAISE_SPEED);
+#     endif // MOTOR_MODE_RAMP
+    ui.set_lcd_msg("Raising...");
+    DEBUG_INFO("Raising crusher.");
+}
+
+void motor_split() {
+  if (lim.door.is_unpressed() || lim.bot.is_pressed()) return;
+    // lock.unlock();
+#     if MOTOR_MODE_RAMP
+      mot.set_targ(MOTOR_SPLIT_SPEED);
+      mot.set_incr_fn(motor_ramp);
+      RAMP_DIFF = MOTOR_SPLIT_SPEED - mot.get_spd();
+      cal.add(motor_incr_spd, RAMP_INTERVAL, RAMP_CALL_COUNT);
+#     else
+      mot.set_spd(MOTOR_SPLIT_SPEED);
+#     endif // MOTOR_MODE_RAMP
+    ui.set_lcd_msg("Splitting,", "watch out!");
+    DEBUG_INFO("Sending crusher down.");
 }
 
 void motor_incr_spd() {

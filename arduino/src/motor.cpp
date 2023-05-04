@@ -67,6 +67,7 @@ void Motor::set_incr_fn(motor_incr_fn* fn) {
 
 void Motor::write() {
   if (_pend_spd != _write_spd) {
+    DEBUG_INFO("Writing %d to motor", _pend_spd);
 #   if MOTOR_CONTROL_CYTRON
       _mot.setSpeed(_pend_spd);
 #   else
